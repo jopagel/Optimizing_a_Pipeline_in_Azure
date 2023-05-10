@@ -10,6 +10,7 @@ import pandas as pd
 from azureml.core.run import Run
 from azureml.core import Workspace, Dataset
 from azureml.data.dataset_factory import TabularDatasetFactory
+import joblib
 
 def clean_data(data):
     # Dict for cleaning data
@@ -53,7 +54,6 @@ def main():
     run.log("Regularization Strength:", np.float(args.C))
     run.log("Max iterations:", np.int(args.max_iter))
 
-    ws = Workspace.from_config()
 
     # TODO: Create TabularDataset using TabularDatasetFactory
     # Data is located at:
@@ -63,11 +63,9 @@ def main():
     url = 'https://automlsamplenotebookdata.blob.core.windows.net/automl-sample-notebook-data/bankmarketing_train.csv'
 
     # create a TabularDatasetFactory object and use it to create a TabularDataset
-    datastore = ws.get_default_datastore()
     dataset = Dataset.Tabular.from_delimited_files(path=url)
-    df = dataset.to_pandas_dataframe()
     
-    x, y = clean_data(df)
+    x, y = clean_data(dataset)
 
     # TODO: Split data into train and test sets.
 
@@ -76,7 +74,12 @@ def main():
     model = LogisticRegression(C=args.C, max_iter=args.max_iter).fit(x_train, y_train)
 
     accuracy = model.score(x_test, y_test)
-    run.log("Accuracy", np.float(accuracy))
+    run.log("accuracy", np.float(accuracy))
+
+    model_file_name = "trained_model.pkl"
+    joblib.dump(value=model, filename=model_file_name)
+
+    run.upload_file(model_file_name, model_file_name)
 
 if __name__ == '__main__':
     main()
