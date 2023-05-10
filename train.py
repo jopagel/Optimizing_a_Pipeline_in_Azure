@@ -64,7 +64,7 @@ def main():
 
     # create a TabularDatasetFactory object and use it to create a TabularDataset
     datastore = ws.get_default_datastore()
-    dataset = Dataset.Tabular.from_delimited_files(path=[(datastore, url)])
+    dataset = Dataset.Tabular.from_delimited_files(path=url)
     df = dataset.to_pandas_dataframe()
     
     x, y = clean_data(df)
