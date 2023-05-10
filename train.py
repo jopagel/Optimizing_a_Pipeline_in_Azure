@@ -38,6 +38,7 @@ def clean_data(data):
     y_df = x_df.pop("y").apply(lambda s: 1 if s == "yes" else 0)
     return x_df, y_df
 
+
 def main():
     # Add arguments to script
     parser = argparse.ArgumentParser()
@@ -71,8 +72,6 @@ def main():
     # TODO: Split data into train and test sets.
 
     x_train, x_test, y_train, y_test = train_test_split(x, y, test_size = 0.1, random_state = 42)
-
-
 
     model = LogisticRegression(C=args.C, max_iter=args.max_iter).fit(x_train, y_train)
 
